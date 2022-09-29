@@ -2,6 +2,9 @@ package com.example.evaluacionddam
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,22 +21,32 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        setContentView(R.layout.itemlista)
         binding=ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        iniciar()
+
+    iniciar()
+
 
 
     }
+
+
+
 
     private fun limpiar(){
-        with(binding){
+        binding.etNombreproducto.setText("")
+        binding.etPrecio.setText("")
+        binding.etID.setText("")
 
-            etID.setText("")
-            etNombreproducto.setText("")
-            etPrecio.setText("")
-            etID.requestFocus()
-        }
+        binding.etID.requestFocus()
+
+
+
+
     }
+
+
 
     private fun agregar() {
 
@@ -49,8 +62,11 @@ class MainActivity : AppCompatActivity() {
                 listaProd.add(prod)
 
                 rvProductos.layoutManager = LinearLayoutManager(this@MainActivity)
-                rvProductos.adapter = ProductoAdacter(listaProd)
+                rvProductos.adapter = ProductoAdacter(listaProd, onClickListener = {
+                    Toast.makeText(this@MainActivity, it.nombre, Toast.LENGTH_SHORT).show()
+                })
 
+                limpiar()
             }
 
 
@@ -65,36 +81,6 @@ class MainActivity : AppCompatActivity() {
         limpiar()
     }
 
-    private fun borrar(){
-
-        try {
-
-            with(binding){
-
-
-                val id:Int=etID.text.toString().toInt()
-                var i=0
-                var encontrado=false
-                while (i<listaProd.size && !encontrado){
-                    if(listaProd[i].id==id){
-                        listaProd.removeAt(i)
-                        encontrado=true
-                    }
-                    i++
-                }
-                if(encontrado){
-                    rvProductos.layoutManager=LinearLayoutManager(this@MainActivity)
-                    rvProductos.adapter=ProductoAdacter(listaProd)
-                }
-            }
-
-
-        }
-        catch (e:Exception){
-            Toast.makeText(this@MainActivity,"Inserte el id correcto para eliminar" ,Toast.LENGTH_SHORT).show()
-        }
-        limpiar()
-    }
 
 
 
@@ -105,23 +91,7 @@ class MainActivity : AppCompatActivity() {
             agregar()
         }
 
-        binding.btnBorrar.setOnClickListener {
 
-                AlertDialog.Builder(this)
-                    .setTitle("Borrar")
-                    .setMessage("¿Estas seguro de borrar?")
-                    .setPositiveButton("Si") { _, _ ->
-                        borrar()
-
-                    }
-                    .setNegativeButton("No") { dialog, _ ->
-                        dialog.dismiss()
-                        Toast.makeText(this, "No se borro", Toast.LENGTH_SHORT).show()
-                    }
-                    .show()
-
-
-        }
         binding.btneditar.setOnClickListener {
 
             editar()
@@ -137,7 +107,7 @@ class MainActivity : AppCompatActivity() {
 
         try {
             with(binding){
-                val id:Int=etID.text.toString().toInt()
+                val id:Int=etbyId.text.toString().toInt()
                 var encontrado=false
                 var i=0
 
@@ -149,7 +119,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-
+                        listaProd[i].id=etID.text.toString().toInt()
                         listaProd[i].nombre=etNombreproducto.text.toString()
                         listaProd[i].precio=etPrecio.text.toString().toDouble()
                         encontrado=true
@@ -160,11 +130,13 @@ class MainActivity : AppCompatActivity() {
                 if(encontrado){
 
                     rvProductos.layoutManager=LinearLayoutManager(this@MainActivity)
-                    rvProductos.adapter=ProductoAdacter(listaProd)
+                    rvProductos.adapter=ProductoAdacter(listaProd, onClickListener = {
+
+                    })
 
                 }
 
-
+    limpiar()
             }
         }
         catch (e:Exception){
@@ -178,7 +150,7 @@ class MainActivity : AppCompatActivity() {
         try{
 
             with(binding){
-              val id:Int=etID.text.toString().toInt()
+              val id:Int=etbyId.text.toString().toInt()
 
               var i=0
               var encontrado=false
@@ -187,7 +159,7 @@ class MainActivity : AppCompatActivity() {
 
 
                   if(listaProd[i].id==id){
-
+                       etID.setText(listaProd[i].id.toString())
                       etNombreproducto.setText(listaProd[i].nombre)
                       etPrecio.setText(listaProd[i].precio.toString())
 
@@ -211,3 +183,4 @@ class MainActivity : AppCompatActivity() {
     }
 
 }
+
